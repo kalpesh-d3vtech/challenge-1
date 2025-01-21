@@ -1,28 +1,17 @@
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
-
+import { Outlet } from "react-router-dom";
+import SidebarComp from "../components/sidebar";
+import NavbarComp from "../components/navbar";
 const DashboardLayout = () => {
     return (
-        <div className="flex min-h-screen">
-            <aside className="w-64 bg-blue-600 text-white">
-                <div className="p-4 text-2xl font-bold">D3V Dashboard</div>
-                <nav className="mt-4">
-                    <ul>
-                        <li>
-                            <Link
-                                to="/dashboard"
-                                className="block px-4 py-2 hover:bg-blue-500"
-                            >
-                                Dashboard
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
-
-            <main className="flex-1 p-6 bg-gray-50">
-                <Outlet />
-            </main>
+        <div className=" max-h-screen font-roboto flex overflow-hidden">
+            <SidebarComp />
+            <div className="w-full">
+                <NavbarComp />
+                <main  className="flex-1 p-6 ">
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 };

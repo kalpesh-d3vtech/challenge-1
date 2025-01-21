@@ -1,11 +1,15 @@
 import React from "react";
 import InputComp from "../components/inputs/inputComp";
 import ButtonComp from "../components/buttons/buttonComp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Facebook from "../assets/icons/facebook.svg";
 import Google from "../assets/icons/google.svg";
 
 const Signin = () => {
+    const navigate = useNavigate();
+    const navigateToDashboard = () => {
+        navigate("/dashboard");
+    };
     return (
         <div className="min-w-full  md:min-w-[388px] md:max-w-[388px]  flex flex-col gap-8 md:gap-12">
             <div className="font-sfpro">
@@ -33,7 +37,7 @@ const Signin = () => {
                     {" "}
                     Forgot Password
                 </div>
-                <ButtonComp variant="primary">Sign in </ButtonComp>
+                <ButtonComp variant="primary" onClick={navigateToDashboard}>Sign in </ButtonComp>
             </div>
             <div>
                 <div className="flex gap-4 items-center mb-6">
@@ -44,16 +48,18 @@ const Signin = () => {
                 <div className="flex gap-4 md:flex-col ">
                     <ButtonComp
                         variant="secondary"
+                        onClick={navigateToDashboard}
                         icon={<img src={Google} alt="google" />}
                     >
-                        <span className="hidden md:block"> Sign in with</span>{" "}
+                        <span className="hidden md:block mr-1"> Sign in with</span>{" "}
                         Google
                     </ButtonComp>
                     <ButtonComp
                         variant="secondary"
+                        onClick={navigateToDashboard}
                         icon={<img src={Facebook} alt="Facebook" />}
                     >
-                        <span className="hidden md:block"> Sign in with</span>{" "}
+                        <span className="hidden md:block mr-1"> Sign in with</span>{" "}
                         Facebook
                     </ButtonComp>
                 </div>

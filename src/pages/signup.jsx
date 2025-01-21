@@ -1,11 +1,15 @@
 import React from "react";
 import InputComp from "../components/inputs/inputComp";
 import ButtonComp from "../components/buttons/buttonComp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Facebook from "../assets/icons/facebook.svg";
 import Google from "../assets/icons/google.svg";
 
 const Signup = () => {
+    const navigate = useNavigate();
+    const navigateToDashboard = () => {
+        navigate("/dashboard");
+    };
     return (
         <div className="min-w-full  md:min-w-[388px] md:max-w-[388px]  flex flex-col gap-8 md:gap-12">
             <div className="font-sfpro">
@@ -35,7 +39,9 @@ const Signup = () => {
                     placeholder="At least 8 characters"
                 />
                 <div className="pt-4">
-                    <ButtonComp variant="primary">Sign up </ButtonComp>
+                    <ButtonComp variant="primary" onClick={navigateToDashboard}>
+                        Sign up{" "}
+                    </ButtonComp>
                 </div>
             </div>
             <div>
@@ -46,17 +52,19 @@ const Signup = () => {
                 </div>
                 <div className="flex gap-4 md:flex-col ">
                     <ButtonComp
+                        onClick={navigateToDashboard}
                         variant="secondary"
                         icon={<img src={Google} alt="google" />}
                     >
-                        <span className="hidden md:block"> Sign up with</span>{" "}
+                        <span className="hidden md:block mr-1"> Sign up with</span>{" "}
                         Google
                     </ButtonComp>
                     <ButtonComp
+                        onClick={navigateToDashboard}
                         variant="secondary"
                         icon={<img src={Facebook} alt="Facebook" />}
                     >
-                        <span className="hidden md:block"> Sign up with</span>{" "}
+                        <span className="hidden md:block mr-1"> Sign up with</span>{" "}
                         Facebook
                     </ButtonComp>
                 </div>
