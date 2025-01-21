@@ -345,9 +345,7 @@ const EmployeeTable = ({ tableData }) => {
                             action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
-                    {deletingRow && (
-                        <p className="mb-4">Invoice: {deletingRow.invoice}</p>
-                    )}
+                    
                     <DialogFooter>
                         <button
                             className="btn btn-danger"

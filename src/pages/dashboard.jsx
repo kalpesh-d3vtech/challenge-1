@@ -2,8 +2,17 @@ import React, { useState } from "react";
 import EmployeeTable from "../components/tables/employeeTable";
 import { CirclePlus, Download, ListFilter } from "lucide-react";
 import SearchIcon from "../assets/icons/Search.svg";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "../components/ui/dialog";
 const Dashboard = () => {
-    const tableData = [
+    const [tableData, setTableData] = useState([
         {
             id: 1,
             firstName: "Marco",
@@ -59,10 +68,17 @@ const Dashboard = () => {
             employementType: "Part Time",
             teams: ["Frontend"],
         },
-        
-    ];
+    ]);
     const [activeTab, setActiveTab] = useState("all");
+    const [newEmployee, setNewEmployee] = useState(null);
 
+    const addEmployee = () => {
+        setTableData((prevData) => [
+            ...prevData,
+            { ...newEmployee, id: prevData.length + 1 },
+        ]);
+        setNewEmployee(null);
+    };
     return (
         <div className="">
             <div className="flex justify-between mb-5">
@@ -71,7 +87,23 @@ const Dashboard = () => {
                     <button className="px-6 h-10 hover:bg-gray-100  flex gap-3 justify-center items-center border rounded-lg">
                         <Download className="w-5 h-5" /> Export
                     </button>
-                    <button className="px-6 h-10  bg-black text-white hover:bg-gray-700  rounded-lg flex gap-3 justify-center items-center">
+                    <button
+                        className="px-6 h-10 bg-black text-white hover:bg-gray-700 rounded-lg flex gap-3 justify-center items-center"
+                        onClick={() =>
+                            setNewEmployee({
+                                firstName: "",
+                                lastName: "",
+                                email: "",
+                                status: "active",
+                                employeeId: `#${Math.random()
+                                    .toString(36)
+                                    .substr(2, 9)}`,
+                                role: "",
+                                employementType: "Full Time",
+                                teams: [],
+                            })
+                        }
+                    >
                         <CirclePlus className="w-5 h-5" /> New Employee
                     </button>
                 </div>
@@ -123,6 +155,84 @@ const Dashboard = () => {
                     <ListFilter className="w-5 h-5" /> Filter
                 </button>
             </div>
+            <Dialog
+                open={!!newEmployee}
+                onOpenChange={(open) => !open && setNewEmployee(null)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add New Employee</DialogTitle>
+                        <DialogDescription>
+                            Fill out the details to add a new employee.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {newEmployee && (
+                        <div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium">
+                                    First Name
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-full border rounded-md p-2"
+                                    value={newEmployee.firstName}
+                                    onChange={(e) =>
+                                        setNewEmployee({
+                                            ...newEmployee,
+                                            firstName: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium">
+                                    Last Name
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-full border rounded-md p-2"
+                                    value={newEmployee.lastName}
+                                    onChange={(e) =>
+                                        setNewEmployee({
+                                            ...newEmployee,
+                                            lastName: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    className="w-full border rounded-md p-2"
+                                    value={newEmployee.email}
+                                    onChange={(e) =>
+                                        setNewEmployee({
+                                            ...newEmployee,
+                                            email: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <button
+                            className="btn bg-green-200 px-4 py-2 rounded-lg btn-primary mr-3"
+                            onClick={addEmployee}
+                        >
+                            Add
+                        </button>
+                        <DialogClose asChild>
+                            <button className="btn btn-secondary bg-red-200 px-4 py-2 rounded-lg">
+                                Cancel
+                            </button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <div>
                 <EmployeeTable tableData={tableData} />
             </div>

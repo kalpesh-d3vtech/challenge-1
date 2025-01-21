@@ -8,7 +8,7 @@ import Google from "../assets/icons/google.svg";
 const Signin = () => {
     const navigate = useNavigate();
     const navigateToDashboard = () => {
-        navigate("/dashboard");
+        // navigate("/dashboard");
     };
     return (
         <div className="min-w-full  md:min-w-[388px] md:max-w-[388px]  flex flex-col gap-8 md:gap-12">
