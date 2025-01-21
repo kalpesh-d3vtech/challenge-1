@@ -1,0 +1,13 @@
+.border-gradient {
+    border-image: conic-gradient(#f97316, #2563eb, #f97316) 1;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
