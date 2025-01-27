@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import InputComp from "../components/inputs/inputComp";
 import ButtonComp from "../components/buttons/buttonComp";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +9,68 @@ const Signin = () => {
     const navigate = useNavigate();
     const navigateToDashboard = () => {
         navigate("/dashboard");
+    };
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+
+    const validateEmail = (email) => {
+        if (!email) {
+            setEmailError("Email is required");
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validatePassword = (password) => {
+        if (!password) {
+            setPasswordError("Password is required");
+        }
+        return password.length >= 8;
+    };
+
+    const handleEmailChange = (event) => {
+        const enteredEmail = event.target.value;
+        setEmail(enteredEmail);
+        setEmailError(
+            validateEmail(enteredEmail) ? "" : "Invalid email format"
+        );
+    };
+
+    const handlePasswordChange = (event) => {
+        const enteredPassword = event.target.value;
+        setPassword(enteredPassword);
+        setPasswordError(
+            validatePassword(enteredPassword)
+                ? ""
+                : "Password must be at least 8 characters"
+        );
+    };
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+          handleSubmit(event);
+        }
+      };
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const isValidEmail = validateEmail(email);
+        const isValidPassword = validatePassword(password);
+
+        if (isValidEmail && isValidPassword) {
+            const accessToken =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImV4cCI6MTczNzY1NzMzOX0.OkEGwBtfN84CcC9tcgUz_XNfGVzr-jwPSOUiNg517MI";
+            const refreshToken =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuZXdfdXNlcm5hbWUiLCJleHAiOjE3Mzc2NTc4NTh9.wViKcp5mJmyxyHOiAUd31qyzNJoOFAXZN7mj7rvvVY4";
+
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("email", email);
+
+            navigateToDashboard();
+        }
     };
     return (
         <div className="min-w-full  md:min-w-[388px] md:max-w-[388px]  flex flex-col gap-8 md:gap-12">
@@ -26,18 +88,30 @@ const Signin = () => {
                     label="Email"
                     type="email"
                     placeholder="Example@email.com"
+                    name="email"
+                    error={emailError}
+                    value={email}
+                    onChange={handleEmailChange}
+                    handleKeyDown={handleKeyDown}
                 />
 
                 <InputComp
                     label="Password"
                     type="password"
                     placeholder="At least 8 characters"
+                    name="password"
+                    error={passwordError}
+                    value={password}
+                    onChange={handlePasswordChange}
+                    handleKeyDown={handleKeyDown}
                 />
                 <div className="text-end text-blue hover:underline cursor-not-allowed mb-4">
                     {" "}
                     Forgot Password
                 </div>
-                <ButtonComp variant="primary" onClick={navigateToDashboard}>Sign in </ButtonComp>
+                <ButtonComp variant="primary" onClick={handleSubmit}>
+                    Sign in{" "}
+                </ButtonComp>
             </div>
             <div>
                 <div className="flex gap-4 items-center mb-6">
@@ -51,7 +125,10 @@ const Signin = () => {
                         onClick={navigateToDashboard}
                         icon={<img src={Google} alt="google" />}
                     >
-                        <span className="hidden md:block mr-1"> Sign in with</span>{" "}
+                        <span className="hidden md:block mr-1">
+                            {" "}
+                            Sign in with
+                        </span>{" "}
                         Google
                     </ButtonComp>
                     <ButtonComp
@@ -59,7 +136,10 @@ const Signin = () => {
                         onClick={navigateToDashboard}
                         icon={<img src={Facebook} alt="Facebook" />}
                     >
-                        <span className="hidden md:block mr-1"> Sign in with</span>{" "}
+                        <span className="hidden md:block mr-1">
+                            {" "}
+                            Sign in with
+                        </span>{" "}
                         Facebook
                     </ButtonComp>
                 </div>
