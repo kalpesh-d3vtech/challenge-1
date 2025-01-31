@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import D3vLogo from "../../assets/logos/d3v-logo.png";
 import { SidebarProvider, Sidebar } from "../ui/sidebar";
 import { ChartPie, LogOut, Newspaper, Settings, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const menuItems = [
     {
@@ -13,16 +14,20 @@ const menuItems = [
             { label: "Recent Hires", path: "#" },
         ],
     },
-    { icon: <Newspaper className="w-4"/>, label: "Payroll", path: "#" },
+    { icon: <Newspaper className="w-4" />, label: "Payroll", path: "#" },
     { icon: <ChartPie className="w-4" />, label: "Report", path: "#" },
-    { icon: <Settings  className="w-4" />, label: "Settings", path: "#" },
+    { icon: <Settings className="w-4" />, label: "Settings", path: "#" },
 ];
 
 const SidebarComp = () => {
+    const navigate = useNavigate();
+
     const location = useLocation();
     const [openMenu, setOpenMenu] = useState(() => {
-        const activeMenuIndex = menuItems.findIndex((item) =>
-            item.children && item.children.some((child) => location.pathname === child.path)
+        const activeMenuIndex = menuItems.findIndex(
+            (item) =>
+                item.children &&
+                item.children.some((child) => location.pathname === child.path)
         );
         return activeMenuIndex !== -1 ? activeMenuIndex : null;
     });
@@ -34,6 +39,16 @@ const SidebarComp = () => {
 
     const isParentActive = (children) =>
         children.some((child) => isActive(child.path));
+
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("email");
+
+        navigate("/");
+
+        window.location.reload();
+    };
 
     return (
         <SidebarProvider className="w-[261px] bg-white flex flex-col border-l">
@@ -117,13 +132,13 @@ const SidebarComp = () => {
                     </ul>
                 </nav>
                 <div className="flex gap-4 items-center  h-20 border-t">
-                    <Link
-                        to="/"
-                        className="px-8 py-2 flex items-center gap-3 font-medium bg-blue-500 rounded-xl hover:bg-blue-600"
+                    <div
+                        onClick={handleLogout}
+                        className="px-8 cursor-pointer py-2 flex items-center gap-3 font-medium bg-blue-500 rounded-xl hover:bg-blue-600"
                     >
                         <LogOut />
                         Logout
-                    </Link>
+                    </div>
                 </div>
             </Sidebar>
         </SidebarProvider>

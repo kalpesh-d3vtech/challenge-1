@@ -1,28 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputComp from "../components/inputs/inputComp";
 import ButtonComp from "../components/buttons/buttonComp";
 import { Link, useNavigate } from "react-router-dom";
 import Facebook from "../assets/icons/facebook.svg";
 import Google from "../assets/icons/google.svg";
+import { apiPOST } from "../utils/apiHandler";
 
 const Signin = () => {
     const navigate = useNavigate();
+
+   
     const navigateToDashboard = () => {
         navigate("/dashboard");
     };
 
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [emailError, setEmailError] = useState("");
+    const [usernameError, setUsernameError] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const validateEmail = (email) => {
-        if (!email) {
-            setEmailError("Email is required");
+    const validateUsername = (username) => {
+        if (!username) {
+            setUsernameError("Username is required");
+            return false;
         }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+        return true;
     };
+    
 
     const validatePassword = (password) => {
         if (!password) {
@@ -31,14 +35,14 @@ const Signin = () => {
         return password.length >= 8;
     };
 
-    const handleEmailChange = (event) => {
-        const enteredEmail = event.target.value;
-        setEmail(enteredEmail);
-        setEmailError(
-            validateEmail(enteredEmail) ? "" : "Invalid email format"
-        );
+    const handleUsernameChange = (event) => {
+        const enteredUsername = event.target.value;
+        setUsername(enteredUsername);
+        if (validateUsername(enteredUsername)) {
+            setUsernameError(""); 
+        }
     };
-
+    
     const handlePasswordChange = (event) => {
         const enteredPassword = event.target.value;
         setPassword(enteredPassword);
@@ -49,29 +53,63 @@ const Signin = () => {
         );
     };
     const handleKeyDown = (event) => {
-        if (event.key === 'Enter') {
-          handleSubmit(event);
-        }
-      };
-    const handleSubmit = (event) => {
-        event.preventDefault();
-
-        const isValidEmail = validateEmail(email);
-        const isValidPassword = validatePassword(password);
-
-        if (isValidEmail && isValidPassword) {
-            const accessToken =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImV4cCI6MTczNzY1NzMzOX0.OkEGwBtfN84CcC9tcgUz_XNfGVzr-jwPSOUiNg517MI";
-            const refreshToken =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuZXdfdXNlcm5hbWUiLCJleHAiOjE3Mzc2NTc4NTh9.wViKcp5mJmyxyHOiAUd31qyzNJoOFAXZN7mj7rvvVY4";
-
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
-            localStorage.setItem("email", email);
-
-            navigateToDashboard();
+        if (event.key === "Enter") {
+            handleSubmit(event);
         }
     };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const isValidUsername = validateUsername(username);
+        const isValidPassword = validatePassword(password);
+
+        if (isValidUsername && isValidPassword) {
+            try {
+                const response = await apiPOST("/auth/login", {
+                    username: username,
+                    password: password,
+                    expiresInMins: 60,
+                });
+
+                const { token, refreshToken } = response;
+
+                localStorage.setItem("accessToken", token);
+                localStorage.setItem("refreshToken", refreshToken);
+                localStorage.setItem("username", username);
+
+                navigateToDashboard();
+            } catch (error) {
+                if (error.response) {
+                    if (error.response.status === 401) {
+                        alert(
+                            "Invalid credentials. Please check your username and password."
+                        );
+                    } else if (error.response.status === 400) {
+                        alert(error?.response?.data?.message || error?.message);
+                    } else {
+                        alert("An error occurred. Please try again later.");
+                    }
+                } else if (error.request) {
+                    alert(
+                        "No response from the server. Please check your network connection."
+                    );
+                } else {
+                    console.error("Error:", error.message);
+                    alert("An unexpected error occurred. Please try again.");
+                }
+            }
+        }
+    };
+
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+            navigateToDashboard();
+        }
+    }, [navigate]);
+
     return (
         <div className="min-w-full  md:min-w-[388px] md:max-w-[388px]  flex flex-col gap-8 md:gap-12">
             <div className="font-sfpro">
@@ -85,13 +123,13 @@ const Signin = () => {
             </div>
             <div>
                 <InputComp
-                    label="Email"
-                    type="email"
-                    placeholder="Example@email.com"
-                    name="email"
-                    error={emailError}
-                    value={email}
-                    onChange={handleEmailChange}
+                    label="User Name"
+                    type="username"
+                    placeholder="Please enter your username"
+                    name="username"
+                    error={usernameError}
+                    value={username}
+                    onChange={handleUsernameChange}
                     handleKeyDown={handleKeyDown}
                 />
 
@@ -112,6 +150,17 @@ const Signin = () => {
                 <ButtonComp variant="primary" onClick={handleSubmit}>
                     Sign in{" "}
                 </ButtonComp>
+                <div className="text-xs mt-2">
+                    You can use any user's credentials from{" "}
+                    <Link
+                        to={"https://dummyjson.com/users"}
+                        target="_blank"
+                        className="text-blue"
+                    >
+                        dummyjson.com/users
+                    </Link>
+                    .{" "}
+                </div>
             </div>
             <div>
                 <div className="flex gap-4 items-center mb-6">
@@ -127,7 +176,7 @@ const Signin = () => {
                     >
                         <span className="hidden md:block mr-1">
                             {" "}
-                            Sign in with
+                            Sign-in with
                         </span>{" "}
                         Google
                     </ButtonComp>
@@ -138,7 +187,7 @@ const Signin = () => {
                     >
                         <span className="hidden md:block mr-1">
                             {" "}
-                            Sign in with
+                            Sign-in with
                         </span>{" "}
                         Facebook
                     </ButtonComp>
